@@ -7,4 +7,5 @@ export const IMG_URLS = {
   LOCO_1: '/img/loco1.png',
   LOCO_2: '/img/loco2.png',
   LOCO_3: '/img/loco3.png',
+  WHACK: '/img/whack.png',
 }

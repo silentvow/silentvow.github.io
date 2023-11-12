@@ -108,16 +108,6 @@ const POS_OFFSETS = [
   { x: 960, y: 800 },
 ]
 
-const testTargets = Array(12).fill(0).map((_, idx) => {
-  return {
-    id: uuidv4(),
-    type: TYPE.A,
-    pos: idx,
-    h: 0,
-    dh: SPEED,
-  }
-})
-
 const pushNewArray = (arr, el) => {
   const newArr = [...arr, el]
   newArr.sort((a, b) => a.pos - b.pos)
@@ -129,8 +119,9 @@ const MainGame = () => {
   const [timeSec, setTimeSec] = useState(0)
   const [score, setScore] = useState(0)
   const [highScore, setHighScore] = useState(0)
-  const [targets, setTargets] = useState(testTargets)
+  const [targets, setTargets] = useState([])
   const [inCoolDown, setInCoolDown] = useState(false)
+  const [whackObj, setWhackObj] = useState({})
 
   const app = useApp()
   useEffect(() => {
@@ -187,32 +178,36 @@ const MainGame = () => {
     })
 
     /* NOTE: add new target */
-    if (inCoolDown) return
     if (timeSec > 60) {
+      if (inCoolDown) return
       if (targets.length >= 2) return
       /* 2: A2 */
       setTargets(arr => {
         return pushNewArray(arr, addNewTarget(arr, RULES[2]))
       })
     } else if (timeSec > 45) {
+      if (inCoolDown && targets.length >= 3) return
       if (targets.length >= 4) return
       /* 4: A2B1X1 */
       setTargets(arr => {
         return pushNewArray(arr, addNewTarget(arr, RULES[4]))
       })
     } else if (timeSec > 30) {
+      if (inCoolDown && targets.length >= 5) return
       if (targets.length >= 6) return
       /* 6: A2B2X2 */
       setTargets(arr => {
         return pushNewArray(arr, addNewTarget(arr, RULES[6]))
       })
     } else if (timeSec > 15) {
+      if (inCoolDown && targets.length >= 7) return
       if (targets.length >= 8) return
       /* 8: A2B2C1X3 */
       setTargets(arr => {
         return pushNewArray(arr, addNewTarget(arr, RULES[8]))
       })
     } else {
+      if (inCoolDown && targets.length >= 9) return
       if (targets.length >= 10) return
       /* 10: A3B2C1X4 */
       setTargets(arr => {
@@ -222,11 +217,23 @@ const MainGame = () => {
     setInCoolDown(true)
   })
 
-  const hitTarget = useCallback((target) => {
+  const hitTarget = useCallback((target, event) => {
     setScore(s => Math.max(0, s + POINTS[target.type]))
     setTargets(arr => {
       return arr.filter(t => t.id !== target.id)
     })
+
+    const whackId = uuidv4()
+    setWhackObj(obj => {
+      return { ...obj, [whackId]: { x: event.globalX, y: event.globalY } }
+    })
+    setTimeout(() => {
+      setWhackObj(obj => {
+        const newObj = { ...obj }
+        delete newObj[whackId]
+        return newObj
+      })
+    }, 100)
   }, [])
 
   return (
@@ -282,8 +289,17 @@ const MainGame = () => {
           width={SIZES[target.type].w}
           height={target.h}
           eventMode='static'
-          onclick={() => hitTarget(target)}
-          ontouchstart={() => hitTarget(target.id)}
+          onclick={(e) => hitTarget(target, e)}
+          ontouchstart={(e) => hitTarget(target, e)}
+        />
+      ))}
+      {Object.entries(whackObj).map(([key, obj]) => (
+        <Sprite
+          key={key}
+          image={IMG_URLS.WHACK}
+          x={obj.x}
+          y={obj.y}
+          anchor={[0.5, 0.5]}
         />
       ))}
       <Graphics
