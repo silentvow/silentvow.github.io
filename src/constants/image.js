@@ -1,5 +1,6 @@
 export const IMG_URLS = {
   BG: '/img/bg1.png',
+  CURSOR: '/img/cursor.png',
   MACHINE: '/img/machine.png',
   ERICA: '/img/erica.png',
   ERICA_1: '/img/erica1.png',

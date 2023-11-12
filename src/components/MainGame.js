@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { TextStyle } from 'pixi.js'
 import { v4 as uuidv4 } from 'uuid'
-import { TilingSprite, Container, Sprite, useTick, Graphics, Text } from '@pixi/react'
+import { TilingSprite, Container, Sprite, useTick, Graphics, Text, useApp } from '@pixi/react'
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from '@/constants/game'
 import { IMG_URLS } from '@/constants/image'
 
@@ -132,6 +132,11 @@ const MainGame = () => {
   const [targets, setTargets] = useState(testTargets)
   const [inCoolDown, setInCoolDown] = useState(false)
 
+  const app = useApp()
+  useEffect(() => {
+    app.renderer.events.cursorStyles.default = 'url(\'/img/cursor.png\'),auto'
+  }, [app])
+
   useEffect(() => {
     if (isPlaying) {
       setTimeSec(75)
@@ -223,8 +228,6 @@ const MainGame = () => {
       return arr.filter(t => t.id !== target.id)
     })
   }, [])
-
-  console.log(targets.every((t, idx) => idx === 0 || t.pos > targets[idx - 1].pos))
 
   return (
     <Container
