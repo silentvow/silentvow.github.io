@@ -9,9 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@pixi/react": "^7.1.1",
+    "@pixi/sound": "^5.2.2",
     "next": "14.0.2",
+    "pixi.js": "^7.3.2",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "uuid": "^9.0.1",
+    "webfontloader": "^1.6.28",
+    "zustand": "^4.4.6"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",
