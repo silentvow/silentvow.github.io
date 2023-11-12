@@ -114,11 +114,13 @@ const pushNewArray = (arr, el) => {
   return newArr
 }
 
+const HIGHSCORE_KEY = 'highscore'
+
 const MainGame = () => {
   const [isPlaying, setIsPlaying] = useState(false)
   const [timeSec, setTimeSec] = useState(0)
   const [score, setScore] = useState(0)
-  const [highScore, setHighScore] = useState(0)
+  const [highScore, setHighScore] = useState(() => parseInt(window.localStorage.getItem(HIGHSCORE_KEY) || '0'))
   const [targets, setTargets] = useState([])
   const [inCoolDown, setInCoolDown] = useState(false)
   const [whackObj, setWhackObj] = useState({})
@@ -158,6 +160,10 @@ const MainGame = () => {
       setHighScore(s => Math.max(s, score))
     }
   }, [isPlaying, score])
+
+  useEffect(() => {
+    window.localStorage.setItem(HIGHSCORE_KEY, `${highScore}`)
+  }, [highScore])
 
   useTick((delta) => {
     if (!isPlaying) return
